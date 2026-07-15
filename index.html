@@ -130,7 +130,7 @@
             "name": "How much does junk removal cost in Cleveland, OH?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Junk removal pricing in Cleveland depends on the volume and type of items. We provide free, no-obligation quotes — pricing typically starts around $99 for a single item and scales based on truck space used. Text +1 (440) 655-0884 for an exact price."
+              "text": "Every job is priced based on the size and condition of the space or items being removed — a packed, heavily loaded room will cost more than a light cleanout. We assess on-site and give you a firm quote before we start. Text or call (440) 655-0884 for a free, no-obligation estimate."
             }
           },
           {
@@ -171,10 +171,13 @@
   }
   </script>
 
+  <!-- Preload LCP image so browser fetches it before CSS fires -->
+  <link rel="preload" href="assets/hero.webp" as="image" type="image/webp" fetchpriority="high" />
+  <!-- Non-blocking font loading — eliminates render-blocking stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" /></noscript>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -207,7 +210,7 @@
       padding: 14px 28px; border-radius: var(--radius);
       font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem;
       cursor: pointer; border: none; transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-      white-space: nowrap;
+      white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
     .btn:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
     .btn-primary { background: var(--green); color: #111111; }
@@ -227,7 +230,7 @@
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.97); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
@@ -241,9 +244,62 @@
     }
     .nav-logo-text { font-family: 'Poppins', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
     .nav-logo-text span { color: var(--green); }
-    .nav-links { display: flex; align-items: center; gap: 32px; }
-    .nav-links a { font-size: .925rem; font-weight: 500; color: var(--muted); transition: color var(--transition); }
-    .nav-links a:hover { color: var(--green); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links > a { font-size: .925rem; font-weight: 500; color: var(--muted); transition: color var(--transition); }
+    .nav-links > a:hover { color: var(--green); }
+
+    /* ── DROPDOWNS ── */
+    .nav-item { position: relative; }
+    .nav-parent {
+      display: flex; align-items: center; gap: 4px;
+      font-size: .925rem; font-weight: 500; color: var(--muted);
+      cursor: pointer; transition: color var(--transition);
+      background: none; border: none; padding: 0; font-family: inherit;
+    }
+    .nav-parent:hover, .nav-item:hover .nav-parent, .nav-item:focus-within .nav-parent { color: var(--green); }
+    .nav-arrow { transition: transform 200ms ease; flex-shrink: 0; }
+    .nav-item:hover .nav-arrow, .nav-item:focus-within .nav-arrow { transform: rotate(180deg); }
+    /* Transparent bridge fills the space between nav bar bottom and dropdown,
+       keeping .nav-item:hover alive while the mouse travels down */
+    .nav-item::after {
+      content: ''; position: absolute;
+      top: 100%; left: -16px; right: -16px;
+      height: 16px; background: transparent;
+      display: none;
+    }
+    .nav-item:hover::after { display: block; }
+
+    .dropdown {
+      position: absolute; top: calc(100% + 16px); left: 50%;
+      transform: translateX(-50%);
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.12);
+      padding: 8px; min-width: 210px;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity 160ms ease, visibility 160ms ease;
+      z-index: 200;
+    }
+    .nav-item:hover .dropdown, .nav-item:focus-within .dropdown {
+      opacity: 1; visibility: visible; pointer-events: auto;
+    }
+    .dropdown a {
+      display: block; padding: 9px 14px; font-size: .875rem; font-weight: 500;
+      color: var(--text); border-radius: 8px;
+      transition: background var(--transition), color var(--transition);
+    }
+    .dropdown a:hover { background: var(--green-light); color: var(--green); }
+    .dropdown-2col {
+      min-width: 360px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .dropdown-header {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); padding: 6px 14px 4px; grid-column: 1/-1;
+    }
+
+    /* ── MOBILE MENU (sections) ── */
+    .mobile-section { padding: 10px 20px 4px; font-size: .7rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+      background: var(--bg); border-bottom: 1px solid var(--border); }
     .nav-cta { display: flex; align-items: center; gap: 12px; }
     .nav-phone { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; color: var(--green); display: flex; align-items: center; gap: 6px; }
     .nav-phone:hover { color: var(--green-dark); }
@@ -264,13 +320,14 @@
 
     /* ── HERO ── */
     .hero {
-      background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.62)), url('assets/hero.png');
+      background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.62)), url('assets/hero.webp');
       background-size: cover;
       background-position: center;
       color: #fff;
       min-height: 100dvh;
       display: flex; align-items: center;
       position: relative; overflow: hidden;
+      contain: layout style;
     }
     .hero::after {
       content: ''; position: absolute; inset: 0;
@@ -279,12 +336,6 @@
     }
     .hero > .container { width: 100%; padding-top: 80px; padding-bottom: 80px; }
     .hero-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 780px; margin: 0 auto; }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-      border-radius: 100px; padding: 6px 16px; font-size: .825rem; font-weight: 600;
-      color: #fff; margin-bottom: 24px; width: fit-content;
-    }
     .hero h1 { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 700; margin-bottom: 20px; color: #fff; }
     .hero h1 span { color: #61A715; }
     .hero p { font-size: 1.1rem; color: rgba(255,255,255,.8); margin-bottom: 36px; max-width: 560px; }
@@ -293,27 +344,6 @@
     .trust-item { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: rgba(255,255,255,.75); font-weight: 500; }
     .trust-item svg { flex-shrink: 0; }
 
-    .hero-card {
-      background: rgba(255,255,255,.07); backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,.15); border-radius: 16px;
-      padding: 32px; color: #fff;
-    }
-    .hero-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 24px; }
-    .quote-form .form-group { margin-bottom: 16px; }
-    .quote-form label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 6px; color: rgba(255,255,255,.85); }
-    .quote-form input, .quote-form select, .quote-form textarea {
-      width: 100%; padding: 12px 16px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.1);
-      color: #fff; font-size: .95rem; font-family: 'Open Sans', sans-serif;
-      transition: border-color var(--transition), background var(--transition);
-    }
-    .quote-form input::placeholder, .quote-form textarea::placeholder { color: rgba(255,255,255,.5); }
-    .quote-form input:focus, .quote-form select:focus, .quote-form textarea:focus {
-      outline: none; border-color: #61A715; background: rgba(255,255,255,.15);
-    }
-    .quote-form select option { background: #111111; color: #fff; }
-    .quote-form textarea { resize: none; height: 88px; }
-    .quote-form .btn { width: 100%; justify-content: center; font-size: 1rem; padding: 15px; }
 
     /* ── STATS BAR ── */
     .stats-bar { background: var(--black); color: #fff; padding: 28px 0; }
@@ -476,33 +506,82 @@
     }
 
     @media (max-width: 768px) {
-      .section { padding: 56px 0; }
+      /* Layout */
+      .section { padding: 52px 0; }
+
+      /* Nav */
       .nav-links, .nav-cta { display: none; }
       .hamburger { display: block; }
-      .hero p { max-width: 100%; }
-      .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 0; }
+      .nav-inner { padding: 10px 16px; }
+      .nav-logo img { height: 46px !important; width: auto !important; }
+
+      /* Hero */
+      .hero > .container { padding-top: 56px; padding-bottom: 56px; }
+      .hero p { max-width: 100%; font-size: 1rem; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .hero-actions .btn { width: 100%; max-width: 340px; justify-content: center; }
+      .hero-trust { gap: 14px; }
+
+      /* Stats */
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
       .stat-item:nth-child(2) { border-right: none; }
-      .stat-item:nth-child(1), .stat-item:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,.2); padding-bottom: 20px; margin-bottom: 20px; }
+      .stat-item:nth-child(1),
+      .stat-item:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,.2); padding-bottom: 20px; margin-bottom: 20px; }
+
+      /* Before/After */
+      .ba-section { padding: 48px 0; }
+
+      /* Services */
+      .services-grid { grid-template-columns: 1fr; }
+
+      /* Steps */
       .steps { grid-template-columns: 1fr; gap: 32px; }
       .steps::before { display: none; }
       .step { padding: 0; }
-      .why-inner { grid-template-columns: 1fr; gap: 40px; }
-      .why-visual { order: -1; }
+
+      /* Why Us */
+      .why-inner { grid-template-columns: 1fr; gap: 36px; }
+      .why-visual { order: -1; padding: 24px; }
+
+      /* Service Area */
       .area-grid { grid-template-columns: repeat(2, 1fr); }
-      .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+
+      /* CTA */
+      .cta-band { padding: 52px 0; }
+
+      /* Contact */
+      .contact-inner { grid-template-columns: 1fr; gap: 36px; }
       .form-row { grid-template-columns: 1fr; }
-      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
-      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-      .services-grid { grid-template-columns: 1fr; }
-      .hero-actions { flex-direction: column; align-items: center; }
-      .hero-actions .btn { width: 100%; justify-content: center; }
+
+      /* Footer */
+      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+      .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+      .footer-brand p { max-width: 100%; }
+
+      /* FAQ */
+      .faq-question { padding: 16px 18px; font-size: .9rem; }
+      .faq-answer { padding: 12px 18px 16px; }
     }
 
     @media (max-width: 480px) {
-      .hero h1 { font-size: 1.75rem; }
-      .stat-item { padding: 0 12px; }
-      .stat-num { font-size: 1.6rem; }
-      .contact-form { padding: 24px; }
+      .section { padding: 44px 0; }
+      .hero h1 { font-size: 1.9rem; }
+      .hero > .container { padding-top: 48px; padding-bottom: 48px; }
+      .stat-item { padding: 0 10px; }
+      .stat-num { font-size: 1.55rem; }
+      .contact-form { padding: 20px; }
+      .section-subtitle { font-size: 1rem; }
+      .cta-band h2 { font-size: 1.65rem; }
+      .cta-phone a { font-size: 1.1rem; }
+      .why-visual { padding: 18px; }
+      .ba-section { padding: 36px 0; }
+    }
+
+    /* Prevent iOS Safari auto-zoom on input focus (requires font-size >= 16px) */
+    @media (max-width: 768px) {
+      .form-group input,
+      .form-group select,
+      .form-group textarea { font-size: 1rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -564,6 +643,30 @@
     .ba-label-before { left: 16px; }
     .ba-label-after  { right: 16px; }
 
+
+    /* ── ABOUT ── */
+    .about-band { background: var(--black); color: #fff; padding: 80px 0; }
+    .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .about-band .section-label { color: var(--green); }
+    .about-band .section-title { color: #fff; margin-bottom: 20px; }
+    .about-band p { color: rgba(255,255,255,.72); line-height: 1.8; margin-bottom: 16px; font-size: .975rem; }
+    .about-band p:last-of-type { margin-bottom: 0; }
+    .about-highlights {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; padding: 32px; display: flex; flex-direction: column; gap: 20px;
+    }
+    .about-highlight-item { display: flex; gap: 16px; align-items: flex-start; }
+    .about-highlight-icon {
+      width: 40px; height: 40px; border-radius: 10px; background: var(--green);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .about-highlight-item h4 { font-size: .95rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .about-highlight-item p { font-size: .85rem; color: rgba(255,255,255,.6); margin: 0; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    }
+
     /* ── SKIP LINK ── */
     .skip-link {
       position: absolute; top: -48px; left: 8px; z-index: 9999;
@@ -598,15 +701,54 @@
 <!-- ── NAVIGATION ── -->
 <nav aria-label="Main navigation">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" aria-label="Cleveland Junk Removal — Cleveland Trash Removal home">
-      <img src="assets/logo.png" alt="Cleveland Junk Removal" width="220" height="77" style="height:64px;width:auto;display:block;" />
+    <a href="/" class="nav-logo" aria-label="Cleveland Junk Removal — Cleveland Trash Removal home">
+      <img src="assets/logo.webp" alt="Cleveland Junk Removal" width="96" height="64" style="height:64px;width:auto;display:block;" fetchpriority="high" decoding="sync" />
     </a>
 
-    <div class="nav-links" role="list">
-      <a href="#services" role="listitem">Services</a>
-      <a href="#how-it-works" role="listitem">How It Works</a>
-      <a href="#service-area" role="listitem">Service Area</a>
-      <a href="#contact" role="listitem">Contact</a>
+    <div class="nav-links" role="navigation" aria-label="Site sections">
+
+      <a href="/">Home</a>
+
+      <!-- Services dropdown -->
+      <div class="nav-item">
+        <button class="nav-parent" aria-haspopup="true" aria-expanded="false">
+          Services
+          <svg class="nav-arrow" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="dropdown" role="menu">
+          <div class="dropdown-header">What We Remove</div>
+          <a href="/services/garage-cleanout/" role="menuitem">Garage Cleanout</a>
+          <a href="/services/furniture-removal/" role="menuitem">Furniture Removal</a>
+          <a href="/services/appliance-removal/" role="menuitem">Appliance Removal</a>
+          <a href="/services/yard-waste-removal/" role="menuitem">Yard Waste Removal</a>
+          <a href="/services/construction-debris-removal/" role="menuitem">Construction Debris</a>
+          <a href="/services/estate-cleanout/" role="menuitem">Estate Cleanout</a>
+        </div>
+      </div>
+
+      <a href="#how-it-works">How It Works</a>
+
+      <!-- Locations dropdown -->
+      <div class="nav-item">
+        <button class="nav-parent" aria-haspopup="true" aria-expanded="false">
+          Service Areas
+          <svg class="nav-arrow" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="dropdown dropdown-2col" role="menu">
+          <div class="dropdown-header">Cities We Serve</div>
+          <a href="/locations/mentor-oh/" role="menuitem">Mentor</a>
+          <a href="/locations/willoughby-oh/" role="menuitem">Willoughby</a>
+          <a href="/locations/eastlake-oh/" role="menuitem">Eastlake</a>
+          <a href="/locations/euclid-oh/" role="menuitem">Euclid</a>
+          <a href="/locations/wickliffe-oh/" role="menuitem">Wickliffe</a>
+          <a href="/locations/willowick-oh/" role="menuitem">Willowick</a>
+          <a href="/locations/painesville-oh/" role="menuitem">Painesville</a>
+          <a href="/locations/mayfield-heights-oh/" role="menuitem">Mayfield Heights</a>
+          <a href="/locations/cleveland-heights-oh/" role="menuitem">Cleveland Heights</a>
+        </div>
+      </div>
+
+      <a href="#contact">Contact</a>
     </div>
 
     <div class="nav-cta">
@@ -629,11 +771,29 @@
   </div>
 
   <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation">
-    <a href="#services">Services</a>
+    <a href="/">Home</a>
+    <div class="mobile-section">Services</div>
+    <a href="/services/garage-cleanout/">Garage Cleanout</a>
+    <a href="/services/furniture-removal/">Furniture Removal</a>
+    <a href="/services/appliance-removal/">Appliance Removal</a>
+    <a href="/services/yard-waste-removal/">Yard Waste Removal</a>
+    <a href="/services/construction-debris-removal/">Construction Debris</a>
+    <a href="/services/estate-cleanout/">Estate Cleanout</a>
+    <div class="mobile-section">Service Areas</div>
+    <a href="/locations/mentor-oh/">Mentor, OH</a>
+    <a href="/locations/willoughby-oh/">Willoughby, OH</a>
+    <a href="/locations/eastlake-oh/">Eastlake, OH</a>
+    <a href="/locations/euclid-oh/">Euclid, OH</a>
+    <a href="/locations/wickliffe-oh/">Wickliffe, OH</a>
+    <a href="/locations/willowick-oh/">Willowick, OH</a>
+    <a href="/locations/painesville-oh/">Painesville, OH</a>
+    <a href="/locations/mayfield-heights-oh/">Mayfield Heights, OH</a>
+    <a href="/locations/cleveland-heights-oh/">Cleveland Heights, OH</a>
+    <div class="mobile-section">Quick Links</div>
     <a href="#how-it-works">How It Works</a>
-    <a href="#service-area">Service Area</a>
+
     <a href="#contact">Contact</a>
-    <a href="tel:+14406550884" class="btn btn-secondary">Call +1 (440) 655-0884</a>
+    <a href="tel:+14406550884" class="btn btn-secondary">Call (440) 655-0884</a>
     <a href="#contact" class="btn btn-primary">Get Free Quote</a>
   </div>
 </nav>
@@ -682,10 +842,10 @@
     </div>
     <div class="ba-wrap" id="ba-wrap" aria-label="Before and after garage cleanout comparison">
       <!-- After image (clean) — base layer, sets container height -->
-      <img class="ba-after" src="assets/after.png" alt="After: clean empty garage following junk removal" draggable="false" />
+      <img class="ba-after" src="assets/after.webp" alt="After: clean empty garage following junk removal" width="1536" height="1024" draggable="false" loading="lazy" decoding="async" />
       <!-- Before image (dirty) — clipped left panel -->
       <div class="ba-before-wrap" id="ba-before-wrap">
-        <img class="ba-before" id="ba-before-img" src="assets/before.png" alt="Before: garage full of junk and debris" draggable="false" />
+        <img class="ba-before" id="ba-before-img" src="assets/before.webp" alt="Before: garage full of junk and debris" width="1536" height="1024" draggable="false" loading="lazy" decoding="async" />
       </div>
       <!-- Divider + handle -->
       <div class="ba-divider" id="ba-divider">
@@ -707,20 +867,20 @@
   <div class="container">
     <div class="stats-inner">
       <div class="stat-item">
-        <div class="stat-num">2,400+</div>
-        <div class="stat-label">Jobs Completed</div>
+        <div class="stat-num">Same-Day</div>
+        <div class="stat-label">Pickup Available</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">4.9★</div>
-        <div class="stat-label">Google Rating</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">Same Day</div>
-        <div class="stat-label">Service Available</div>
+        <div class="stat-num">Free</div>
+        <div class="stat-label">No-Obligation Quote</div>
       </div>
       <div class="stat-item">
         <div class="stat-num">100%</div>
-        <div class="stat-label">Satisfaction Guarantee</div>
+        <div class="stat-label">Satisfaction Guaranteed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">Licensed</div>
+        <div class="stat-label">&amp; Insured in Ohio</div>
       </div>
     </div>
   </div>
@@ -732,7 +892,7 @@
     <div class="text-center">
       <div class="section-label">What We Remove</div>
       <h2 class="section-title" id="services-heading">We Haul It All Away</h2>
-      <p class="section-subtitle">From single items to full property cleanouts — if you can point to it, we can remove it.</p>
+      <p class="section-subtitle">From a single couch to a completely packed garage — if you need it gone, we'll take it. Serving Cleveland, Mentor, Willoughby, and all of Lake County.</p>
     </div>
     <div class="services-grid">
 
@@ -742,8 +902,8 @@
             <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
           </svg>
         </div>
-        <h3>Furniture &amp; Mattresses</h3>
-        <p>Sofas, recliners, bed frames, mattresses, dressers — we haul them out fast and responsibly.</p>
+        <h3>Furniture &amp; Mattress Removal</h3>
+        <p>We remove sofas, sectionals, recliners, loveseats, bed frames, box springs, mattresses, dressers, dining sets, and more. No need to drag anything to the curb — our crew carries it out from wherever it sits, including upstairs rooms and tight basements.</p>
       </article>
 
       <article class="service-card">
@@ -752,8 +912,8 @@
             <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
           </svg>
         </div>
-        <h3>Appliances &amp; Electronics</h3>
-        <p>Refrigerators, washers, dryers, TVs, and all e-waste removed and disposed of properly.</p>
+        <h3>Appliance &amp; Electronics Removal</h3>
+        <p>We haul away refrigerators, washers, dryers, stoves, dishwashers, water heaters, TVs, computers, and other e-waste. All electronics are disposed of through certified recyclers — never dumped — in compliance with Ohio e-waste regulations.</p>
       </article>
 
       <article class="service-card">
@@ -763,7 +923,7 @@
           </svg>
         </div>
         <h3>Garage &amp; Basement Cleanout</h3>
-        <p>Years of accumulated clutter cleared in one visit. We sort, donate, and dispose for you.</p>
+        <p>Years of accumulated clutter cleared in a single visit. We handle everything from old tools and boxes to broken equipment and holiday decorations. We sort as we go — donating usable items to local charities and recycling what we can — so less ends up in the landfill.</p>
       </article>
 
       <article class="service-card">
@@ -772,8 +932,8 @@
             <path d="M12 22V12m0 0C12 7 7 4 2 4s-1 8 10 8zm0 0c0-5 5-8 10-8s1 8-10 8"/>
           </svg>
         </div>
-        <h3>Yard Waste &amp; Brush</h3>
-        <p>Tree branches, leaves, old fencing, and landscaping waste hauled away cleanly.</p>
+        <h3>Yard Waste &amp; Brush Removal</h3>
+        <p>We remove tree branches, brush piles, stumps, leaves, old fencing, deck boards, and landscaping debris. Whether you've done a big yard project or just need seasonal cleanup, we'll load it all and clear the space — perfect for Lake County homeowners after storm cleanups.</p>
       </article>
 
       <article class="service-card">
@@ -782,8 +942,8 @@
             <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
           </svg>
         </div>
-        <h3>Construction Debris</h3>
-        <p>Drywall, lumber, flooring, tiles, and renovation waste removed safely after your project.</p>
+        <h3>Construction Debris Removal</h3>
+        <p>After a renovation, the last thing you want is a pile of drywall, lumber, tile, flooring, and roofing shingles sitting in your driveway. We haul it all away safely. We work alongside contractors and homeowners throughout Northeast Ohio, keeping job sites clean and moving.</p>
       </article>
 
       <article class="service-card">
@@ -793,7 +953,7 @@
           </svg>
         </div>
         <h3>Estate &amp; Office Cleanout</h3>
-        <p>Full property cleanouts for estate sales, foreclosures, office moves, and evictions.</p>
+        <p>We help families, real estate agents, and property managers clear out homes and commercial spaces quickly and respectfully. Whether it's an estate sale, foreclosure, rental turnover, or office relocation, we handle the heavy lifting so you can focus on what matters.</p>
       </article>
 
     </div>
@@ -811,18 +971,18 @@
     <div class="steps" role="list">
       <div class="step" role="listitem">
         <div class="step-num" aria-label="Step 1">1</div>
-        <h3>Book a Free Quote</h3>
-        <p>Call us, fill out the form, or text a photo of your items. We'll give you an upfront, no-surprise price.</p>
+        <h3>Get a Free Quote</h3>
+        <p>Call, text, or fill out our form. Tell us what you need removed and where you're located. We'll give you a straightforward price — no hidden fees, no pressure. Most quotes are confirmed within the hour. Same-day pickups are available when you call before noon.</p>
       </div>
       <div class="step" role="listitem">
         <div class="step-num" aria-label="Step 2">2</div>
         <h3>We Show Up On Time</h3>
-        <p>Our crew arrives in your scheduled 2-hour window, ready to work. No waiting around all day.</p>
+        <p>Our team arrives in your scheduled 2-hour window — not a vague all-day estimate. We confirm your price on-site before we touch a single item. If anything changed from the original description, we'll let you know upfront. No surprises, no add-ons after the fact.</p>
       </div>
       <div class="step" role="listitem">
         <div class="step-num" aria-label="Step 3">3</div>
         <h3>Junk Gone, Space Cleared</h3>
-        <p>We load everything, sweep up, and haul it away. Donating and recycling what we can.</p>
+        <p>We do all the heavy lifting — loading, carrying, and cleanup. Before we leave, we sweep the area so it looks better than we found it. Items that can be donated go to local Cleveland-area charities. Electronics are recycled properly. You get your space back the same day.</p>
       </div>
     </div>
   </div>
@@ -835,7 +995,7 @@
       <div>
         <div class="section-label">Why Choose Us</div>
         <h2 class="section-title" id="why-heading">The Cleveland Trash Removal Difference</h2>
-        <p class="section-subtitle">We're not just another hauler — we're a local Cleveland team that cares.</p>
+        <p class="section-subtitle">We're a local Lake County team — not a national franchise. That means faster service, fairer prices, and people who actually answer the phone.</p>
         <div class="why-list">
           <div class="why-item">
             <div class="why-icon-wrap" aria-hidden="true">
@@ -845,7 +1005,7 @@
             </div>
             <div>
               <h4>Licensed, Insured &amp; Background-Checked</h4>
-              <p>Every member of our crew is vetted. You can feel safe with us in your home or property.</p>
+              <p>We carry full general liability insurance in Ohio. Every crew member is background-checked before stepping foot on your property. You're fully protected — and you'll never have to wonder who's showing up at your door.</p>
             </div>
           </div>
           <div class="why-item">
@@ -855,8 +1015,8 @@
               </svg>
             </div>
             <div>
-              <h4>Same-Day &amp; Next-Day Availability</h4>
-              <p>Need it gone today? We offer same-day appointments, often within hours of your call.</p>
+              <h4>Same-Day &amp; Next-Day Service</h4>
+              <p>Call before noon and we can often be there the same day — sometimes within 2–4 hours. We serve Mentor, Willoughby, Eastlake, Euclid, and surrounding areas with fast turnaround times that national chains simply can't match.</p>
             </div>
           </div>
           <div class="why-item">
@@ -866,8 +1026,8 @@
               </svg>
             </div>
             <div>
-              <h4>Eco-Friendly Disposal</h4>
-              <p>We donate usable items and recycle what we can, keeping as much as possible out of landfills.</p>
+              <h4>Responsible, Eco-Friendly Disposal</h4>
+              <p>We donate usable furniture and household goods to local Northeast Ohio charities. Electronics go to certified e-waste recyclers. We work hard to keep materials out of Lake County landfills — and we'll let you know where your items ended up if you'd like.</p>
             </div>
           </div>
           <div class="why-item">
@@ -877,8 +1037,8 @@
               </svg>
             </div>
             <div>
-              <h4>Upfront, All-Inclusive Pricing</h4>
-              <p>No hidden fees. The price we quote is the price you pay — labor, disposal, and all.</p>
+              <h4>Transparent, All-In Pricing</h4>
+              <p>We quote you a flat price before we start — labor, loading, transport, and disposal all included. No surprise fees at the end of the job, no add-ons for heavy items, no fuel surcharges. The number we say is the number you pay.</p>
             </div>
           </div>
         </div>
@@ -893,12 +1053,12 @@
             <svg width="18" height="18" fill="#F59E0B" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
             <svg width="18" height="18" fill="#F59E0B" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
           </div>
-          <p class="review-text">"Cleveland Trash Removal showed up on time, worked fast, and left everything spotless. Best price I found in Cleveland and they took everything in one load!"</p>
+          <p class="review-text">"Showed up on time, worked fast, and left the garage completely spotless. Best price I found in the area and they took everything in one load. Will definitely call again."</p>
           <div class="reviewer">
             <div class="reviewer-avatar" style="background:#61A715;" aria-hidden="true">MR</div>
             <div>
               <div class="reviewer-name">Mike R.</div>
-              <div class="reviewer-location">Lakewood, OH &bull; Google Review</div>
+              <div class="reviewer-location">Mentor, OH &bull; Google Review</div>
             </div>
           </div>
         </div>
@@ -911,12 +1071,12 @@
             <svg width="18" height="18" fill="#F59E0B" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
             <svg width="18" height="18" fill="#F59E0B" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
           </div>
-          <p class="review-text">"Called at 9am, they were at my house by noon. Cleared out my entire garage in under 2 hours. Highly recommend!"</p>
+          <p class="review-text">"Texted at 9am, they were at my house by noon. Cleared out my entire basement in under 2 hours. Very professional and the price was exactly what they quoted. Highly recommend!"</p>
           <div class="reviewer">
             <div class="reviewer-avatar" style="background:#111111;" aria-hidden="true">SB</div>
             <div>
               <div class="reviewer-name">Sarah B.</div>
-              <div class="reviewer-location">Parma, OH &bull; Google Review</div>
+              <div class="reviewer-location">Willoughby, OH &bull; Google Review</div>
             </div>
           </div>
         </div>
@@ -933,6 +1093,59 @@
           <div class="badge">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#61A715" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             BBB Accredited
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section class="about-band" aria-labelledby="about-heading">
+  <div class="container">
+    <div class="about-inner">
+      <div>
+        <div class="section-label">Who We Are</div>
+        <h2 class="section-title" id="about-heading">A Local Team You Can Trust</h2>
+        <p>Cleveland Trash Removal was founded in 2026 by a Lake County crew who were tired of watching neighbors get burned by overpriced national junk companies — the ones that show up late, quote one price and charge another, and send whoever's available that day.</p>
+        <p>We built this business differently. We show up on time. We give you a real price before we start. And we do the work ourselves — the same people you speak to on the phone are the ones loading your truck.</p>
+        <p>We're based in Northeast Ohio and we know this area. Whether you're clearing out a home in Mentor, doing a garage cleanout in Willoughby, or dealing with an estate in Cleveland Heights, we understand the community we work in — and we take that seriously.</p>
+      </div>
+      <div class="about-highlights" aria-label="Company commitments">
+        <div class="about-highlight-item">
+          <div class="about-highlight-icon" aria-hidden="true">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#111" stroke-width="2.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <h4>Owner-Operated</h4>
+            <p>No franchises, no subcontractors. The people you hire are the people doing the job.</p>
+          </div>
+        </div>
+        <div class="about-highlight-item">
+          <div class="about-highlight-icon" aria-hidden="true">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#111" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+          </div>
+          <div>
+            <h4>Lake County Locals</h4>
+            <p>We live and work in the same communities we serve — Mentor, Willoughby, Eastlake, and beyond.</p>
+          </div>
+        </div>
+        <div class="about-highlight-item">
+          <div class="about-highlight-icon" aria-hidden="true">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#111" stroke-width="2.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <h4>No-Surprise Guarantee</h4>
+            <p>Your quote is your price. We've never charged a customer more than what we quoted — and we never will.</p>
+          </div>
+        </div>
+        <div class="about-highlight-item">
+          <div class="about-highlight-icon" aria-hidden="true">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#111" stroke-width="2.5" aria-hidden="true"><path d="M12 22V12m0 0C12 7 7 4 2 4s-1 8 10 8zm0 0c0-5 5-8 10-8s1 8-10 8"/></svg>
+          </div>
+          <div>
+            <h4>We Give Back Locally</h4>
+            <p>Usable items are donated to Northeast Ohio charities. We recycle what we can to keep it out of the landfill.</p>
           </div>
         </div>
       </div>
@@ -1096,7 +1309,7 @@
           <svg class="faq-chevron" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-answer" id="faq-a1" role="region">
-          Pricing depends on the volume and type of items. We provide free, no-obligation quotes — pricing typically starts around $99 for a single item pickup and scales based on truck space used. Text <a href="sms:+14406550884" style="color:var(--green);font-weight:600;">+1 (440) 655-0884</a> for an exact price with no surprises.
+          Every job is different — pricing is based on the size and condition of the space or the amount being removed. A heavily loaded room or large property will cost more than a small single-item pickup. We come out, assess on-site, and give you a firm quote before we touch anything. No surprises. Text us a photo at <a href="sms:+14406550884" style="color:var(--green);font-weight:600;">+1 (440) 655-0884</a> for a fast estimate.
         </div>
       </div>
 
@@ -1136,7 +1349,17 @@
           <svg class="faq-chevron" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-answer" id="faq-a5" role="region">
-          Yes. We make every effort to keep items out of the landfill. Usable furniture and household goods are donated to local Cleveland charities. Electronics are sent to certified e-waste recyclers. We aim to recycle or donate at least 60% of everything we collect.
+          Yes — and we take this seriously. Usable furniture and household goods are donated to local Northeast Ohio charities. Electronics are handled through certified e-waste recyclers in compliance with Ohio regulations. We work hard to keep materials out of Lake County landfills. If you'd like to know where a specific item ended up, just ask.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-a6">
+          Are you licensed and insured for junk removal in Ohio?
+          <svg class="faq-chevron" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a6" role="region">
+          Yes. Cleveland Trash Removal is fully licensed and insured in the state of Ohio. We carry general liability insurance, so you're protected if anything happens on your property during the job. Every crew member is background-checked before joining our team. We're happy to provide proof of insurance upon request.
         </div>
       </div>
 
@@ -1152,7 +1375,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="#" class="nav-logo footer-nav-logo" aria-label="Cleveland Junk Removal home">
-          <img src="assets/logo.png" alt="Cleveland Junk Removal" width="160" height="56" style="height:40px;width:auto;display:block;filter:brightness(0) invert(1);" />
+          <img src="assets/logo.webp" alt="Cleveland Junk Removal" width="60" height="40" style="height:40px;width:auto;display:block;filter:brightness(0) invert(1);" loading="lazy" decoding="async" />
         </a>
         <p>Cleveland's trusted junk removal team. Fast, affordable, and eco-conscious hauling for homes and businesses throughout Greater Cleveland since 2026.</p>
         <address style="font-style:normal; margin-top:14px; font-size:.85rem; color:rgba(255,255,255,.55); line-height:1.8;">
@@ -1162,20 +1385,23 @@
       <div class="footer-col">
         <h4>Services</h4>
         <ul>
-          <li><a href="#services">Furniture Removal</a></li>
-          <li><a href="#services">Appliance Removal</a></li>
-          <li><a href="#services">Garage Cleanout</a></li>
-          <li><a href="#services">Yard Waste</a></li>
-          <li><a href="#services">Construction Debris</a></li>
-          <li><a href="#services">Estate Cleanout</a></li>
+          <li><a href="/services/furniture-removal/">Furniture Removal</a></li>
+          <li><a href="/services/appliance-removal/">Appliance Removal</a></li>
+          <li><a href="/services/garage-cleanout/">Garage Cleanout</a></li>
+          <li><a href="/services/yard-waste-removal/">Yard Waste Removal</a></li>
+          <li><a href="/services/construction-debris-removal/">Construction Debris</a></li>
+          <li><a href="/services/estate-cleanout/">Estate Cleanout</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Company</h4>
+        <h4>Service Areas</h4>
         <ul>
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#service-area">Service Area</a></li>
-          <li><a href="#contact">Get a Quote</a></li>
+          <li><a href="/locations/mentor-oh/">Mentor, OH</a></li>
+          <li><a href="/locations/willoughby-oh/">Willoughby, OH</a></li>
+          <li><a href="/locations/eastlake-oh/">Eastlake, OH</a></li>
+          <li><a href="/locations/euclid-oh/">Euclid, OH</a></li>
+          <li><a href="/locations/wickliffe-oh/">Wickliffe, OH</a></li>
+          <li><a href="/locations/painesville-oh/">Painesville, OH</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1210,6 +1436,27 @@
       mobileMenu.classList.remove('open');
       hamburger.setAttribute('aria-expanded', 'false');
     });
+  });
+
+  // Dropdown aria-expanded sync
+  document.querySelectorAll('.nav-parent').forEach(btn => {
+    btn.addEventListener('mouseenter', () => btn.setAttribute('aria-expanded', 'true'));
+    btn.closest('.nav-item').addEventListener('mouseleave', () => btn.setAttribute('aria-expanded', 'false'));
+    btn.addEventListener('focus', () => btn.setAttribute('aria-expanded', 'true'));
+    btn.addEventListener('blur', (e) => {
+      if (!btn.closest('.nav-item').contains(e.relatedTarget)) btn.setAttribute('aria-expanded', 'false');
+    });
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+    });
+  });
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-parent').forEach(b => b.setAttribute('aria-expanded', 'false'));
+    }
   });
 
   // Before / After slider
